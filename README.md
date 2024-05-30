@@ -1,6 +1,6 @@
 # Cinequiz
 
-![cinequiz logo](./data/img/cinequiz.png)
+<img src="./data/img/cinequiz.png" alt="cinequiz logo" width="300" height="300">
 
 ## 1. La risposta giusta
 
