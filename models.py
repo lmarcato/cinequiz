@@ -333,13 +333,41 @@ class ImdbTsvReader:
         
 class QuizGenerator:
     """
+    Classe utilizzata per la creazione di un Quiz
+    
+    Attributi
+    ---------
+    _imdb : ImdbTsvReader()
+        permette di ottenere le informazioni dal dataset imdb
+        
+    Metodi
+    ------
+    generate(difficulty)
+        Sceglie la tipologia di quiz (numero di episodi, durata, cast)
+    _combine_answers(correct, wrong)
+        Unisce le riposte del quiz in un unico dizionario
+    _set_score(difficulty)
+        Restituisce lo score associato al quiz in base alla difficoltà selezionata
+    _number_episode(difficulty, _)
+        Restituisce un quiz la cui domanda riguarda il numero di episodi di un movie (serie tv)
+    _duration(difficulty, _)
+        Restituisce un quiz la cui domanda riguarda la durata di un movie (film)
+    _crew(difficulty, title_type)
+        Restituisce un quiz la cui domanda riguarda il cast di un movie (serie tv o film)
     """
     
     def __init__(self):
+        """"""
         self._imdb = ImdbTsvReader()
 
     def generate(self, difficulty: str) -> Quiz:
-        """"""
+        """Sceglie la tipologia di quiz (numero di episodi, durata, cast)
+        
+        Parametri
+        ---------
+        difficulty : str
+            Indica il livello di difficoltà con cui generare il quiz
+        """
         quiz = constant.QUIZ['quiz']
         title_type = np.random.choice(constant.QUIZ_TITLE_TYPE)
         movie = quiz[title_type]
@@ -348,8 +376,16 @@ class QuizGenerator:
         call = getattr(self, callable)
         return call(difficulty, title_type)
         
-    def _combine_answers(self, correct: str, wrong: list[str]) -> dict:
-        """"""
+    def _combine_answers(self, correct: str, wrong: list) -> dict:
+        """Unisce le riposte del quiz in un unico dizionario
+        
+        Parametri
+        ---------
+        correct : str
+            Rappresenta la risposta corretta del quiz
+        wrong : list
+            Rappresenta le possibili domande sbagliate del quiz
+        """
         keys = [str(key + 1) for key in range(len(wrong) + 1)]
         np.random.shuffle(keys)
         answers = {keys.pop(): (correct, True)}
@@ -358,7 +394,13 @@ class QuizGenerator:
         return answers
         
     def _set_score(self, difficulty:str) -> int:
-        """"""
+        """Restituisce lo score associato al quiz in base alla difficoltà selezionata
+        
+        Parametri
+        ---------
+        difficulty : str
+            Indica il livello di difficoltà per poter restituire lo score associato
+        """
         if difficulty == 'EASY':
             return 100
         elif difficulty == 'MEDIUM':
@@ -367,7 +409,13 @@ class QuizGenerator:
             return 300
     
     def _number_episodes(self, difficulty: str, _=None) -> Quiz:
-        """"""
+        """Restituisce un quiz la cui domanda riguarda il numero di episodi di un movie (serie tv)
+        
+        Parametri
+        ---------
+        difficulty : str
+            Indica il livello di difficoltà con cui generare le risposte del quiz
+        """
         movie = self._imdb.get_number_episodes()
         
         correct_answer = movie.iloc[0]['episodeNumber']
@@ -388,7 +436,13 @@ class QuizGenerator:
             score=self._set_score(difficulty))
     
     def _duration(self, difficulty: str, _: str=None) -> Quiz:
-        """"""
+        """Restituisce un quiz la cui domanda riguarda la durata di un movie (film)
+        
+        Parametri
+        ---------
+        difficulty : str
+            Indica il livello di difficoltà con cui generare le risposte del quiz
+        """
         movie = self._imdb.get_duration()
         
         correct_answer = movie.iloc[0]['runtimeMinutes']
@@ -409,7 +463,15 @@ class QuizGenerator:
             score=self._set_score(difficulty))
         
     def _crew(self, difficulty: str, title_type: str) -> Quiz:
-        """"""
+        """Restituisce un quiz la cui domanda riguarda il cast di un movie (serie tv o film)
+        
+        Parametri
+        ---------
+        difficulty : str
+            Indica il livello di difficoltà con cui generare le risposte del quiz
+        title_type : str
+            Indica il tipo di movie (serie tv o film) su cui fare a domanda
+        """
         movie = self._imdb.get_crew(title_type=title_type)
         
         correct_answer = movie.iloc[0]['primaryName']
@@ -433,8 +495,36 @@ class QuizGenerator:
             score=self._set_score(difficulty))
 
 class Game:
-    """"""
+    """
+    Classe regola il funzionamento del gioco
+    
+    Attributi
+    ---------
+    quiz_generator : QuizGenerator
+        permette di generare i quiz
+    player : Player
+        rappresenta il giocatore
+    quiz_number: int
+        il numero di quiz per partita
+    game_score : int
+        il punteggio totale della partita
+    current_game : int
+        indica il numero di partite giocate
+        
+    Metodi
+    ------
+    _iteration()
+        Rappresenta gli step di un'azione completa di gioco
+    run()
+        Permette di effettuare il corretto numero di iterazioni di gioco e di giocare più partite
+    """
     def __init__(self, player: Player, quiz_number:int):
+        """
+        Pamaretri
+        ---------
+            player : Player
+            quiz_number : int
+        """
         self.quiz_generator = QuizGenerator()
         self.player = player
         self.quiz_number = quiz_number
@@ -442,8 +532,13 @@ class Game:
         self.game_score = 0
         self.current_game = 0
         
-    def _iteration(self):
-        """"""
+    def _iteration(self) -> None:
+        """Rappresenta gli step di un'azione completa di gioco.
+        Questa prevede:
+        1. selezione della difficoltà
+        2. lettura e risposta al quiz
+        3. valutazione della risposta e assegnazione del punteggio
+        """
         difficulty = ''
         while difficulty not in ['EASY', 'MEDIUM', 'HARD']:
             difficulty = input('Inserisci il livello di difficoltà [EASY, MEDIUM, HARD]:')
@@ -472,8 +567,9 @@ class Game:
             print(f'Peccato la riposta giusta era la {key}: {solution}')
         
         
-    def run(self):
-        """"""
+    def run(self) -> None:
+        """Permette di effettuare il corretto numero di iterazioni di gioco e di giocare più partite
+        """
         print(f'Ciao {self.player.name}.')
         print('Iniziamo!')
         play_again = 'SI'

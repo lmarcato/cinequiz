@@ -23,42 +23,8 @@ Il dataset è stato modificato e ridotto per renderlo utilizzabile, i file sono 
 - title.episode.tsv
 - title.principals.tsv
 
-### Classi
+### UML class
 
-- Player
-- Quiz
-- QuizGenerator
-- ImdbTsvReader
-- Game
+![UML class module 'models.py'](./data/img/UML_class.png)
 
-### Strutture dati utilizzate
-
-Classe Player attributo *_games*
-
-```python
-    _games = { 0: ((7,15), 700) }
-```
-
-Dove:
-
-- la chiave rappresenta il numero della partita giocata
-- il valore contiene una tupla con il numero di riposte esatte su quelle totali e il punteggio della partita
-
-Classe Quiz attributo *answers*
-
-```python
-    answers = { 
-            0: ('answer', False),
-            1: ('answer', True),
-            2: ('answer', False),
-            3: ('answer', False)
-        }
-```
-
-Dove:
-
-- la chiave rappresenta il numero della domanda
-- il valore contiene una tupla con il testo della risposta e la soluzione
-
-### Logica dei quiz
-
+### Logica di selezione dei quiz
