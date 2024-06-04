@@ -54,7 +54,7 @@ class Player:
         games = []
         for game, ((correct_ans, total_ans), score) in self._games.items():
             games.append(
-                "Game {} correct answers: [{}/{}], final score: {}"
+                "Partita {}, risposte corrette: [{}/{}], punteggio finale: {}"
                 .format(game, correct_ans, total_ans, score)
             )
         return games
